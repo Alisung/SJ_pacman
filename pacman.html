@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript" src ="pacman_stage.js"></script>
+	<script type="text/javascript" src ="pacman_main.js"></script>
+	<link rel="stylesheet" type ="text/css" href="pacman_style.css">
+    <title>Pacman</title>
+    
+	
+</head>
+<body>
+	<nav id ="Game_list">
+        <h1>SJ게임센터</h1>
+        <ul>
+            <a href ="tutorial/sunjin_tutorial/index.html">테트리스</a>
+            <a href="pacman.html">팩맨(버그수정중)</a>
+        </ul>
+    <nav>
+	<div>
+		<canvas id="canvas" width="300" height="300"></canvas>
+	</div>
+	<!-- <div id ="button">
+		<button type ="button" id ="right">우</button>
+		<button type="button" id ="down">하</button>
+		<button type="button" id ="up">상</button>
+		<button type="button" id ="left">좌</button>
+	</div> -->
+	<table class="tetris_button_panel" cellpadding="5">
+		<tr>
+			<td></td>
+			<td style ="background-color: white;" id ="up" class="tetris_button">↑</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td style ="background-color: white; "id = "left" class="tetris_button">←</td>
+			<td style ="background-color: white; "id = "down" class="tetris_button">↓</td>
+			<td style ="background-color: white; "id = "right" class="tetris_button">→</td>
+		</tr>
+	</table>
+	
+
+	
+</body>
+</html>
