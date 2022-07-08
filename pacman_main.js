@@ -468,8 +468,13 @@ window.onload = function () {
 
       cancelAnimationFrame(turn_contral);
       // 충돌검사 후 10, 30, 50 .. 값이 되면 이동가능한 상태 D_control_key가 0이 되는 값만 이동 가능함
-      // 만약 left 키를 눌러서 left로 가는 에니메이션이 반복 될 때는 함수 move_left 에서 탈출을 하지 않는 상태이고
-      // down키를 누르면 바로 move_down으로 들어가는 게 아니라 지연시간을 부여한다
+      // 만약 left 키를 눌러서 left로 가는 에니메이션이 실행중 일 때는 함수 left_move 가 끝나지 않은 상태
+      // left_move 함수와 turn_down 함수를 반복 실행한다.
+      // 멀티쓰레드원리?
+      // 다시 말하면 왼쪽으로 이동하는 애니메이션이 계속 실행 되는 동시에 down 버튼을 누르면
+      // turn_down 함수도 같이 계속 실행되고 turn_down 함수의 x,y 좌표값이 10,30,50 등의 값이 되는 조건을 만족하면
+      // down_move 함수가 실행되어 아래로 이동하게 되는 원리. 지연시간이 부여된것 처럼 보인다.
+      // down키를 누르면 바로 down_move으로 들어가는 게 아니라 지연시간을 부여한다
       // x,y값이 10, 30, 50 .. 일때 내려가도록 구현됨
       if (control_key == 0 && D_control_key == 0) {
         if (
