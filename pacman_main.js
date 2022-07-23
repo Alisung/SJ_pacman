@@ -220,6 +220,8 @@ class Anemy extends Navigation {
 
       alert("game_over");
       cancelAnimationFrame(Animation_move);
+      cancelAnimationFrame(autoAnmeyMove);
+
       if (player_down == true) {
         cancelAnimationFrame(Animation_down);
       }
@@ -337,6 +339,177 @@ class Anemy extends Navigation {
     stage_draw();
   };
 }
+
+class autoAmney extends Navigation {
+  constructor(anmeyx, anmeyy, color) {
+    super();
+    this.a = anmeyx;
+    this.b = anmeyy;
+    this.a2;
+    this.b2;
+    this.anemy_x = 0;
+    this.anemy_y = 0;
+    this.count = 0;
+    this.color = color;
+    this.turnUp = false;
+    this.turnDown = false;
+    this.turnLeft = false;
+    this.turnRight = true;
+    //적의 위치값 배열
+    // 위 아래 왼쪽 오른쪽
+    this.reverseDirection = null;
+    this.trueDirection = null;
+    this.autoTurnArr = [false, false, false, false];
+    this.arx = [(this.a / 10 - 1) / 2 + 1];
+    this.ary = [(this.b / 10 - 1) / 2 + 1];
+  }
+  draw = () => {
+    context3.beginPath();
+    context3.fillStyle = this.color;
+    context3.arc(this.a, this.b, 8, 0, Math.PI * 2, true);
+    context3.closePath();
+    context3.fill();
+  };
+
+  game_over1 = () => {
+    //점과 점 사이의 거리 공식을 이용
+    // square root{(this.a - x)^2 + (this.b-y)^2}
+    // 반지름 = 8, 두 중점사이의 거리가 16미만일때
+    // 게임 오버
+    if (16 > Math.sqrt(Math.pow(this.a - x, 2) + Math.pow(this.b - y, 2))) {
+      return true;
+    }
+  };
+  move_anemy = () => {
+    this.anemy_x = (this.a / 10 - 1) / 2 + 1; // 150 -> 8
+    this.anemy_y = (this.b / 10 - 1) / 2 + 1; // 110 -> 5
+    //game over
+    if (this.game_over1()) {
+      game_over = true;
+
+      alert("game_over");
+      cancelAnimationFrame(autoAnmeyMove);
+      cancelAnimationFrame(Animation_move);
+      if (player_down == true) {
+        cancelAnimationFrame(Animation_down);
+      }
+      if (player_up == true) {
+        cancelAnimationFrame(Animation_up);
+      }
+      if (player_left == true) {
+        cancelAnimationFrame(Animation_left);
+      }
+      if (player_right == true) {
+        cancelAnimationFrame(Animation_right);
+      }
+      return;
+    }
+
+    console.log("적 위치 : ", this.a, this.b);
+    if (
+      (this.b / 10) % 2 == 1 &&
+      this.b % 10 == 0 &&
+      (this.a / 10) % 2 == 1 &&
+      this.a % 10 == 0
+    ) {
+      cancelAnimationFrame(autoAnmeyMove);
+      if (
+        navigation[this.anemy_y][this.anemy_x] == 0 ||
+        navigation[this.anemy_y][this.anemy_x] == 1
+      ) {
+        // 방향 초기화
+
+        this.autoTurnArr = [false, false, false, false];
+        if (
+          navigation[this.anemy_y - 1][this.anemy_x] == 0 ||
+          navigation[this.anemy_y - 1][this.anemy_x] == 1
+        ) {
+          this.autoTurnArr[0] = true;
+        }
+        if (
+          navigation[this.anemy_y + 1][this.anemy_x] == 0 ||
+          navigation[this.anemy_y + 1][this.anemy_x] == 1
+        ) {
+          this.autoTurnArr[1] = true;
+        }
+        if (
+          navigation[this.anemy_y][this.anemy_x - 1] == 0 ||
+          navigation[this.anemy_y][this.anemy_x - 1] == 1
+        ) {
+          this.autoTurnArr[2] = true;
+        }
+        if (
+          navigation[this.anemy_y][this.anemy_x + 1] == 0 ||
+          navigation[this.anemy_y][this.anemy_x + 1] == 1
+        ) {
+          this.autoTurnArr[3] = true;
+        }
+        // autoAnmey가 갈수 있는 방향이 한방향일때 (막힌공간)에 들어갈 때 멈추지 않게 한다
+        let count2 = 0;
+        for (let i = 0; i < 4; i++) {
+          if (this.autoTurnArr[i] == true) {
+            count2++;
+          }
+        }
+        if (count2 != 1) {
+          // 뒤로 가지 않도록 만들어 놓은 조건문
+          if (this.reverseDirection == "Down") {
+            this.autoTurnArr[1] = false;
+          } else if (this.reverseDirection == "Up") {
+            this.autoTurnArr[0] = false;
+          } else if (this.reverseDirection == "Left") {
+            this.autoTurnArr[2] = false;
+          } else if (this.reverseDirection == "Right") {
+            this.autoTurnArr[3] = false;
+          }
+        }
+      }
+    } else {
+      if (this.autoTurnArr[0] == true) {
+        this.reverseDirection = "Down";
+      } else if (this.autoTurnArr[1] == true) {
+        this.reverseDirection = "Up";
+      } else if (this.autoTurnArr[2] == true) {
+        this.reverseDirection = "Right";
+      } else if (this.autoTurnArr[3] == true) {
+        this.reverseDirection = "Left";
+      }
+    }
+    // true 걸러내기 작업
+    let count = 0;
+    // true 개수 세기 3개가 최대
+    for (let i = 0; i < 4; i++) {
+      if (this.autoTurnArr[i] == true) {
+        count++;
+      }
+    }
+    // 이동하는 방향 배열(최대 true 3개)에서 true가 한개가 남을 때까지 반복후
+    // 반복문 종료
+    for (;;) {
+      if (count == 1) {
+        break;
+      }
+      this.trueDirection = Math.floor(Math.random() * 4);
+      if (this.autoTurnArr[this.trueDirection] == true) {
+        this.autoTurnArr[this.trueDirection] = false;
+        count--;
+      }
+    }
+
+    if (this.autoTurnArr[0] == true) {
+      this.b--;
+    } else if (this.autoTurnArr[1] == true) {
+      this.b++;
+    } else if (this.autoTurnArr[2] == true) {
+      this.a--;
+    } else if (this.autoTurnArr[3] == true) {
+      this.a++;
+    }
+    autoAnmeyMove = requestAnimationFrame(this.move_anemy);
+    stage_draw();
+  };
+}
+let autoAnmeyMove;
 let Animation_move;
 let cell_size = 20; // 팩맨 동전이 들어갈 박스, 벽 한칸 사이즈
 let R_Dubble_click_ctrl = 0;
@@ -371,6 +544,7 @@ let j = 0;
 let canvas;
 let context;
 let context2;
+let context3;
 let turn_contral;
 let spot_x;
 let spot_y;
@@ -379,6 +553,7 @@ let x_spot_navi;
 let y_spot_navi;
 let BFS_STOP;
 let Anemy1 = new Anemy(150, 130, "red");
+let autoAnemy = new autoAmney(30, 10, "yellow");
 //let Anemy2 = new Anemy(10, 10, "white");
 let setTimeout_ctrl = 0;
 
@@ -386,6 +561,7 @@ window.onload = function () {
   canvas = document.getElementById("canvas");
   context = canvas.getContext("2d");
   context2 = canvas.getContext("2d");
+  context3 = canvas.getContext("2d");
   stage_draw();
 
   //setTimeout(() => {
@@ -393,6 +569,7 @@ window.onload = function () {
   //}, 0);
   //setTimeout(() => {
   Anemy1.Anemy_BFS();
+  autoAnemy.move_anemy();
   //Anemy2.Anemy_BFS();
 
   //}, 0);
@@ -468,13 +645,8 @@ window.onload = function () {
 
       cancelAnimationFrame(turn_contral);
       // 충돌검사 후 10, 30, 50 .. 값이 되면 이동가능한 상태 D_control_key가 0이 되는 값만 이동 가능함
-      // 만약 left 키를 눌러서 left로 가는 에니메이션이 실행중 일 때는 함수 left_move 가 끝나지 않은 상태
-      // left_move 함수와 turn_down 함수를 반복 실행한다.
-      // 멀티쓰레드원리?
-      // 다시 말하면 왼쪽으로 이동하는 애니메이션이 계속 실행 되는 동시에 down 버튼을 누르면
-      // turn_down 함수도 같이 계속 실행되고 turn_down 함수의 x,y 좌표값이 10,30,50 등의 값이 되는 조건을 만족하면
-      // down_move 함수가 실행되어 아래로 이동하게 되는 원리. 지연시간이 부여된것 처럼 보인다.
-      // down키를 누르면 바로 down_move으로 들어가는 게 아니라 지연시간을 부여한다
+      // 만약 left 키를 눌러서 left로 가는 에니메이션이 반복 될 때는 함수 move_left 에서 탈출을 하지 않는 상태이고
+      // down키를 누르면 바로 move_down으로 들어가는 게 아니라 지연시간을 부여한다
       // x,y값이 10, 30, 50 .. 일때 내려가도록 구현됨
       if (control_key == 0 && D_control_key == 0) {
         if (
@@ -743,6 +915,7 @@ function stage_draw() {
 
   // 적 AI
   Anemy1.draw();
+  autoAnemy.draw();
   //Anemy2.draw();
 }
 // 우 클릭시 오른쪽으로만 계속 이동하는 함수
@@ -889,6 +1062,7 @@ function call_rocation(X_rocation, Y_rocation) {
       //console.log(eat_count);
       if (eat_count == 134) {
         cancelAnimationFrame(Animation_move);
+        cancelAnimationFrame(autoAnmeyMove);
 
         if (player_down == true) {
           cancelAnimationFrame(Animation_down);
